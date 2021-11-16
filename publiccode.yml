@@ -1,0 +1,77 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+applicationSuite: e-procurement GT-SUAM
+categories:
+  - procurement
+dependsOn:
+  open:
+    - name: Java
+      optional: false
+      version: OpenJDK-11.0.12
+      versionMax: '11'
+      versionMin: '1.8'
+    - name: Postgresql
+      optional: false
+      version: ''
+      versionMax: '11'
+      versionMin: '9.6'
+    - name: Tomcat
+      optional: false
+      version: 9.0.54
+      versionMax: '9'
+      versionMin: '8'
+description:
+  it:
+    features:
+      - Compilazione di avvisi
+      - Compilazione di bandi di gara
+      - Compilazione di esiti di gara
+      - Acquisizione dati anagrafica gara e lotti da SIMOG ANAC
+      - Compilazione di programmi triennali e annuali di LL.PP.
+      - Compilazione di programmi biennali di beni e servizi
+      - Pubblicazione dati e trasmissione al servizio SCP
+    genericName: e-procurement platform
+    longDescription: |
+      Il modulo BAND è un applicativo di back office ad uso delle Stazioni Appaltanti di ambito regionale e si sotituisce al servizio SCP Servizio Contratti Pubblici del Ministero delle infrastrutture e della mobilità sostenibili.
+      I dati inseriti dalle Stazioni Appaltanti vengono quindi pubblicati e istantaneamente trasferiti al Ministero.
+    shortDescription: Modulo riservato alle Stazioni Appaltanti per la compilazione di atti e programmi
+usedBy:
+  - Regione Marche
+developmentStatus: stable
+it:
+  conforme:
+    gdpr: false
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: true
+    modelloInteroperabilita: false
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: true
+    pagopa: false
+    spid: true
+  riuso:
+    codiceIPA: r_marche
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Maggioli S.p.A.
+  repoOwner: Regione Marche
+localisation:
+  availableLanguages:
+    - it
+  localisationReady: false
+maintenance:
+  contractors:
+    - name: MAGGIOLI SPA
+      until: '2021-12-31'
+      website: 'https://www.maggioli.com'
+  type: contract
+name: BAND
+platforms:
+  - web
+releaseDate: '2021-10-15'
+softwareType: standalone/web
+url: 'https://github.com/regione-marche/e-procurement-BAND.git'
