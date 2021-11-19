@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="appaltiLiguria" >
+ 
+	<typeAlias alias="calendarHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.CalendarTypeHandlerCallback"/>
+ 	<typeAlias alias="timestampCalendarHandler" type="it.eldasoft.utils.ibatis.TimestampCalendarTypeHandlerCallback"/>
+	<typeAlias alias="classeImportoHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.ClasseImportoTypeHandlerCallback" />
+	<typeAlias alias="categoriaHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.CategoriaTypeHandlerCallback" />
+	<typeAlias alias="flagEsitoCollaudoHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagEsitoCollaudoHandlerCallback" />
+	<typeAlias alias="flagImportiHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagImportiTypeHandlerCallback" />
+	<typeAlias alias="flagRitardoHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagRitardoTypeHandlerCallback" />
+	<typeAlias alias="flagSingoloCommissioneHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagSingoloCommissioneTypeHandlerCallback" />
+	<typeAlias alias="flagSNHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagSNTypeHandlerCallback" />
+	<typeAlias alias="flagSOHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagSOTypeHandlerCallback" />
+	<typeAlias alias="flagTCHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagTCTypeHandlerCallback" />
+	<typeAlias alias="flagTipoFinanziamentoHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.TipoFinanziamentoTypeHandlerCallback" />
+	<typeAlias alias="flagVarianteHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.FlagVarianteTypeHandlerCallback" />
+	<typeAlias alias="tipoSchedaHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.TipoSchedaTypeHandlerCallback" />
+	<typeAlias alias="tipoStrumentoHandler" type="it.eldasoft.w9.dao.ibatis.handlercallback.TipoStrumentoTypeHandlerCallback"/>
+	
+	<resultMap id="resultDatiComuni" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiComuni" >
+		<result property="CODICE_UFFICIO" column="CODICE_UFFICIO" />
+		<result property="DESCR_UFFICIO" column="DENOM" />
+		<!-- result property="IMPORTO_LIQUIDATO" column="IMPORTO_LIQUIDATO" /-->
+		<result property="OGGETTO_GARA" column="OGGETTO" />
+		<result property="ID_GARA" column="IDAVGARA" />
+		<result property="FLAG_IMPORTO_GARA_DISP" column="IMPDIS" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_GARA" column="IMPORTO_GARA" />
+		<result property="NUM_LOTTI" column="NLOTTI" />
+		<result property="FLAG_ENTE" column="FLAG_ENTE_SPECIALE" typeHandler="flagSOHandler" />
+		<result property="MODO_INDIZIONE" column="ID_MODO_INDIZIONE" />
+		<result property="MODO_REALIZZAZIONE" column="TIPO_APP" />
+		<result property="FLAG_SA_AGENTE" column="FLAG_SA_AGENTE"  typeHandler="flagSNHandler" />
+		<result property="CIG_AQ" column="CIG_ACCQUADRO" />
+		<result property="ID_TIPOLOGIA_SA" column="ID_TIPOLOGIA_SA" />
+		<result property="DEN_AMM_AGENTE" column="DENOM_SA_AGENTE" />
+		<result property="CF_AMM_AGENTE" column="CF_SA_AGENTE" />
+		<result property="TIPOLOGIA_PROCEDURA" column="TIPOLOGIA_PROCEDURA" />
+		<result property="FLAG_CENTRALE_STIPULA" column="FLAG_CENTRALE_STIPULA" typeHandler="flagSNHandler" />
+		<result property="DATA_GURI_GARA" column="DGURI" typeHandler="calendarHandler" />
+		<result property="DATA_SCADENZA_GARA" column="DSCADE" typeHandler="calendarHandler" />
+		<result property="CAM_GARA" column="CAM" typeHandler="flagSNHandler" />
+		<result property="SISMA_GARA" column="SISMA" typeHandler="flagSNHandler" />
+		<result property="INDSEDE_GARA" column="INDSEDE" />
+		<result property="COMSEDE_GARA" column="COMSEDE" />
+		<result property="PROSEDE_GARA" column="PROSEDE" />
+	</resultMap>
+
+	<select id="selectDatiComuni" resultMap="resultDatiComuni" parameterClass="java.util.HashMap">
+		select UFFICI.CODICE_UFFICIO, UFFICI.DENOM, W9GARA.OGGETTO, W9GARA.IDAVGARA, 
+					 W9GARA.IMPDIS, W9GARA.IMPORTO_GARA, W9GARA.NLOTTI, W9LOTT.FLAG_ENTE_SPECIALE, TO_CHAR(W9GARA.ID_MODO_INDIZIONE) as ID_MODO_INDIZIONE,
+					 TO_CHAR(W9GARA.TIPO_APP) as TIPO_APP, W9GARA.FLAG_SA_AGENTE, W9GARA.CIG_ACCQUADRO, TO_CHAR(W9GARA.ID_TIPOLOGIA_SA) as ID_TIPOLOGIA_SA, W9GARA.DENOM_SA_AGENTE,
+           W9GARA.CF_SA_AGENTE, TO_CHAR(W9GARA.TIPOLOGIA_PROCEDURA) as TIPOLOGIA_PROCEDURA, W9GARA.FLAG_CENTRALE_STIPULA, W9GARA.DGURI, W9GARA.DSCADE,
+           W9GARA.CAM, W9GARA.SISMA, W9GARA.INDSEDE, W9GARA.COMSEDE, W9GARA.PROSEDE
+      from W9GARA, W9LOTT, UFFICI
+     where W9LOTT.CODGARA=#codiceGara:NUMERIC# AND W9LOTT.CODLOTT=#codiceLotto:NUMERIC# AND 
+     			 W9GARA.CODGARA = W9LOTT.CODGARA AND W9GARA.CODEIN = UFFICI.CODEIN AND
+     			 W9GARA.IDUFFICIO = UFFICI.ID
+	</select>
+	<!-- , null as IMPORTO_LIQUIDATO -->
+	
+	<resultMap id="resultDatiComuniEstesi" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiComuniEstesi" >
+		<result property="OGGETTO" column="OGGETTO" />
+		<result property="FLAG_LOTTO_DERIVANTE" column="COMCON" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_LOTTO" column="IMPORTO_LOTTO" nullValue="-9999"/>
+		<result property="CPV" column="CPV" />
+		<result property="FLAG_SOMMA_URGENZA" column="SOMMA_URGENZA" typeHandler="flagSNHandler" />
+		<result property="ID_SCELTA_CONTRAENTE" column="ID_SCELTA_CONTRAENTE" />
+		<result property="CAT_PREVALENTE" column="CAT_PREVALENTE" typeHandler="categoriaHandler" />
+		<result property="PROC_SCELTA_502016" column="ID_SCELTA_CONTRAENTE_50" />
+		<result property="NUM_PROGR_LOTTO" column="NUM_PROGR_LOTTO" />
+		<result property="NUM_LOTTO_GARA" column="NUM_LOTTO_GARA" />
+		<result property="FLAG_POSA" column="MANOD" typeHandler="flagSNHandler" />
+		<result property="FLAG_IMPORTO_DISP" column="IMPDISP" typeHandler="flagSNHandler" />
+		<result property="CLASSE_IMPORTO" column="CLASCAT" typeHandler="classeImportoHandler" />
+		<result property="CIG_PADRE" column="CIGCOM" />
+		<result property="NUM_PROGRESSIVO" column="NUM_PROGRESSIVO" />
+		<result property="TIPO_APPALTO" column="TIPO_CONTRATTO" typeHandler="tipoSchedaHandler" />
+		<result property="FLAG_TIPO_SETTORE" column="FLAG_ENTE_SPECIALE" typeHandler="flagSOHandler" />
+		<result property="ID_MODO_GARA" column="ID_MODO_GARA" />
+		<result property="LUOGO_ISTAT" column="LUOGO_ISTAT" />
+		<result property="FLAG_1632006_1" column="ART_E1" typeHandler="flagSNHandler" />
+		<result property="NUTS" column="LUOGO_NUTS" />
+		<result property="ID_TIPO_PRESTAZIONE" column="ID_TIPO_PRESTAZIONE" />
+		<result property="CIG" column="CIG" />
+		<result property="FLAG_1632006_2" column="ART_E2" typeHandler="flagSNHandler" />		
+		<result property="IMPORTO_SIC" column="IMPORTO_ATTUAZIONE_SICUREZZA" />
+		<result property="CUP" column="CUP" />
+		<result property="DATA_PUBBLICAZIONE" column="DATA_PUBBLICAZIONE" typeHandler="calendarHandler" />
+		<!-- result property="MOTIVO_COMPLETAMENTO" column="MOTIVO_COMPLETAMENTO" javaType="java.lang.String" /-->
+		<result property="FLAG_SOTTOSOGLIA" column="FLAG_SOTTOSOGLIA" typeHandler="flagSNHandler" javaType="java.lang.String" />
+	</resultMap>
+
+	<select id="selectDatiComuniEstesi" resultMap="resultDatiComuniEstesi" parameterClass="java.util.HashMap">
+		select COMCON, ART_E1, OGGETTO, SOMMA_URGENZA, IMPORTO_LOTTO, CPV, TO_CHAR(ID_SCELTA_CONTRAENTE) as ID_SCELTA_CONTRAENTE, 
+					 (select CODAVCP from W9CODICI_AVCP where TABCOD='W3z03' and CODSITAT=W9LOTT.ID_CATEGORIA_PREVALENTE) as CAT_PREVALENTE,
+					 TO_CHAR(ID_SCELTA_CONTRAENTE_50) as ID_SCELTA_CONTRAENTE_50, NLOTTO as NUM_PROGR_LOTTO, NLOTTO as NUM_LOTTO_GARA, ART_E2, 
+	  			 W9LOTT.MANOD, IMPDISP, CLASCAT,
+	  			 CIGCOM, TO_CHAR(NLOTTO) as NUM_PROGRESSIVO, TIPO_CONTRATTO, FLAG_ENTE_SPECIALE,
+	  			 TO_CHAR(ID_MODO_GARA) as ID_MODO_GARA, SUBSTR(LUOGO_ISTAT,4,6) as LUOGO_ISTAT, LUOGO_NUTS, to_CHAR(ID_TIPO_PRESTAZIONE) as ID_TIPO_PRESTAZIONE, CIG, coalesce(IMPORTO_ATTUAZIONE_SICUREZZA, 0) as IMPORTO_ATTUAZIONE_SICUREZZA,
+	  			 CUP, DATA_PUBBLICAZIONE, '2' as FLAG_SOTTOSOGLIA
+			from W9LOTT where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	<!-- , null as MOTIVO_COMPLETAMENTO, null as FLAG_SOTTOSOGLIA -->
+	
+	<resultMap id="resultDatiAggiudicatari" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAggiudicatari" >
+		<result property="INPS" column="NINPS" />
+		<result property="DENOMINAZIONE" column="NOMEST" />
+		<result property="CODICE_FISCALE" column="CFIMP" />
+		<result property="PARTITA_IVA" column="PIVIMP" />
+		<result property="INDIRIZZO" column="INDIMP" />
+		<result property="CIVICO" column="NCIIMP" />
+		<result property="PROVINCIA" column="PROIMP" />
+		<result property="CAP" column="CAPIMP" />
+		<result property="LOCALITA_IMP" column="LOCIMP" />
+		<result property="CITTA" column="CODCIT" />
+		<result property="CODICE_STATO" column="NAZIMP" />
+		<result property="TELEFONO" column="TELIMP" />
+		<result property="FAX" column="FAXIMP" />
+		<result property="CELL_IMP" column="TELCEL" />
+		<result property="EMAIL" column="EMAIIP" />
+		<result property="PEC_IMP" column="EMAI2IP" />
+		<result property="WEB_IMP" column="INDWEB" />
+		<result property="NCCIAA" column="NCCIAA" />
+		<result property="NATURA_GIURIDICA" column="NATGIUI" />
+		<result property="TIPOLOGIA_SOGGETTO" column="TIPIMP" />
+		<result property="COMUNE_ESTERO" column="COMUNE_ESTERO" />
+		<result property="MOTIVO_ASSENZA_INPS" column="MOTIVO_ASSENZA_INPS" />
+	</resultMap>
+
+	<select id="selectDatiAggiudicatario" resultMap="resultDatiAggiudicatari" parameterClass="java.lang.String" >
+		<![CDATA[
+		SELECT NINPS, NOMEST, CFIMP, PIVIMP, INDIMP, NCIIMP, PROIMP, CAPIMP, LOCIMP, substr(CODCIT,4) as CODCIT,
+           CASE WHEN (NAZIMP is not null and NAZIMP <> 1) THEN (SELECT TAB2TIP from TAB2 WHERE TAB2COD='W9z04' and TAB2D1 = TO_CHAR(NAZIMP)) end as NAZIMP,
+           TELIMP, FAXIMP, TELCEL, EMAIIP, EMAI2IP, INDWEB, NCCIAA, TO_CHAR(NATGIUI) as NATGIUI, TO_CHAR(TIPIMP) as TIPIMP,
+           CASE WHEN NINPS is null and NATGIUI = 10 THEN 'Libero professionista' else null end as MOTIVO_ASSENZA_INPS,
+           CASE WHEN (NAZIMP is not null and NAZIMP <> 1) THEN LOCIMP end as COMUNE_ESTERO
+      FROM IMPR WHERE CODIMP=#codiceImpresa:VARCHAR#
+      ]]>
+	</select>
+	
+	<resultMap id="resultOfferente" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.Offerente" >
+		<result property="TIPOLOGIA_SOGGETTO" column="TIPOAGG" />
+		<result property="flagPartecipante" column="PARTECIP" />
+		<result property="RUOLO" column="RUOLO" />
+		<result property="ID_GRUPPO" column="NUM_RAGG" />
+	</resultMap>
+	
+	<select id="selectListaOfferenti" resultMap="resultOfferente" parameterClass="java.util.HashMap" >
+		select TIPOAGG, PARTECIP, RUOLO, NUM_RAGG from W9IMPRESE
+		 where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	  order by TIPOAGG asc, NUM_IMPR asc, NUM_RAGG asc
+	</select>
+	
+	<select id="selectCodiceImpreseListaOfferenti" resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+		select CODIMP from W9IMPRESE where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+		order by TIPOAGG asc, NUM_IMPR asc, NUM_RAGG asc
+	</select>
+	
+	<select id="selectListaTipologiaFornitureServizi" resultClass="java.lang.Long" parameterClass="java.util.HashMap" >
+		select ID_APPALTO from W9APPAFORN WHERE CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<select id="selectListaTipologiaLavori" resultClass="java.lang.Long" parameterClass="java.util.HashMap" >
+		select ID_APPALTO from W9APPALAV WHERE CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<select id="selectListaCondizioni" resultClass="java.lang.Long" parameterClass="java.util.HashMap" >
+		select ID_CONDIZIONE from W9COND WHERE CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<select id="selectListaCpvSecondari" resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+		select CPV from W9CPV WHERE CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<resultMap id="resultDatiResponsabile" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiResponsabile" >
+		<result property="INDIRIZZO" column="INDTEC" />
+		<result property="CIVICO" column="NCITEC" />
+		<result property="LOCALITA_TECN" column="LOCTEC" />
+		<result property="ALBO_PROFESSIONALE" column="ALBTEC" typeHandler="flagSNHandler" />
+		<result property="CAP" column="CAPTEC" />
+		<result property="TELEFONO" column="TELTEC" />
+		<result property="FAX" column="FAXTEC" />
+		<result property="CODICE_FISCALE" column="CFTEC" />
+		<result property="CODICE_ISTAT_COMUNE" column="CITTEC" />
+		<result property="EMAIL" column="EMATEC" />
+		<result property="COGNOME" column="COGTEI" />
+		<result property="NOME" column="NOMETEI" />
+		<result property="PRO_TECN" column="PROTEC" />
+		<result property="CODICE_STATO" column="NAZTEI" />
+		<result property="COMUNE_ESTERO" column="COMUNE_ESTERO" />
+		<!--result property="NCCIAA" column="NCCIAA" /-->
+		<!--result property="CFASSOCIATI" column="CF_ASSOCIATI" /-->
+		<!--result property="DENOMINAZIONEASSOCIATI" column="DENOMINAZIONE_ASSOCIATI" /-->
+	</resultMap>
+	
+	<select id="selectDatiResponsabile" resultMap="resultDatiResponsabile" parameterClass="java.lang.String" >
+		<![CDATA[
+		select INDTEC, NCITEC, case when ALBTEC is not null then '1' else '2' end as ALBTEC, LOCTEC, CAPTEC, TELTEC, 
+					 FAXTEC, CFTEC, SUBSTR(CITTEC,4,6) as CITTEC, EMATEC, COGTEI, NOMETEI, PROTEC, 
+					 CASE WHEN (NAZTEI is not null and NAZTEI <> 1) THEN (SELECT TAB2TIP from TAB2 WHERE TAB2COD='W9z04' and TAB2D1 = TO_CHAR(NAZTEI)) end as NAZTEI,
+					 CASE WHEN (NAZTEI is not null and NAZTEI <> 1) THEN LOCTEC end as COMUNE_ESTERO
+		  from TECNI where CODTEC=#codiceTecnico:VARCHAR#
+		]]>
+  </select>
+  
+ 
+  <!-- null as NCCIAA, null as CF_ASSOCIATI, null as DENOMINAZIONE_ASSOCIATI  -->
+  
+  <resultMap id="resultDatiLegaleRappresentante" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiLegaleRappresentante">
+		<result property="COGNOME" column="COGTIM" />
+		<result property="NOME" column="NOMETIM" />
+		<result property="CODICE_FISCALE" column="CFTIM" />
+	</resultMap>
+  
+  <select id="selectDatiLegaleRappresentante" resultMap="resultDatiLegaleRappresentante" parameterClass="java.lang.String" >
+		select COGTIM, NOMETIM, CFTIM from TEIM where CODTIM=#codiceTecnico:VARCHAR#
+  </select>
+  
+	<resultMap id="resultDatiSoggettiEstesi" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiSoggettiEstesi" >
+		<result property="ID_RUOLO" column="ID_RUOLO" />
+		<result property="CIG_PROG_ESTERNA" column="CIG_PROG_ESTERNA" />
+		<result property="DATA_AFF_PROG_ESTERNA" column="DATA_AFF_PROG_ESTERNA" typeHandler="calendarHandler" />
+		<result property="DATA_CONS_PROG_ESTERNA" column="DATA_CONS_PROG_ESTERNA" typeHandler="calendarHandler" />
+		<result property="SEZIONE" column="SEZIONE" />
+		<!-- result property="COSTOPROGETTO" column="COSTO_PROGETTO" /-->
+	</resultMap>
+  
+  <select id="selectDatiSoggettiEstesi" resultMap="resultDatiSoggettiEstesi" parameterClass="java.util.HashMap" >
+  	select ID_RUOLO, CIG_PROG_ESTERNA, DATA_AFF_PROG_ESTERNA, DATA_CONS_PROG_ESTERNA, SEZIONE
+      from W9INCA where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+      <isNotNull property="listaSezioni" prepend="AND">
+      	SEZIONE in 
+      	<iterate property="listaSezioni" open="(" close=")" conjunction="," >
+      		#listaSezioni[]#
+      	</iterate>
+      </isNotNull>
+      <isNull property="listaSezioni" prepend="AND">
+       SEZIONE not in ('NP')
+      </isNull>
+     order by ID_RUOLO asc, SEZIONE asc
+  </select>
+  <!-- , null as COSTO_PROGETTO -->
+  
+  <select id="selectCodiceTecniciSoggettiEstesi" resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+  	select CODTEC from W9INCA where CODGARA=#codiceGara# AND CODLOTT=#codiceLotto#
+  	<isNotNull property="listaSezioni" prepend="AND">
+  		SEZIONE in 
+			<iterate property="listaSezioni" open="(" close=")" conjunction="," >
+      		#listaSezioni[]#
+      </iterate>
+		</isNotNull>
+    <isNull property="listaSezioni" prepend="AND">
+     SEZIONE not in ('NP')
+    </isNull>
+  	order by ID_RUOLO asc, SEZIONE asc
+  </select>
+
+	<resultMap id="resultDatiAggiudicazione" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAggiudicazione" >
+		<result property="DATA_VERB_AGGIUDICAZIONE" column="DATA_VERB_AGGIUDICAZIONE" typeHandler="calendarHandler" />
+		<result property="IMPORTO_LAVORI" column="IMPORTO_LAVORI" />
+		<result property="IMPORTO_SERVIZI" column="IMPORTO_SERVIZI" />
+		<result property="IMPORTO_FORNITURE" column="IMPORTO_FORNITURE" />
+		<result property="IMPORTO_ATTUAZIONE_SICUREZZA" column="IMPORTO_ATTUAZIONE_SICUREZZA" />
+		<result property="IMPORTO_PROGETTAZIONE" column="IMPORTO_PROGETTAZIONE" />
+		<result property="OPERE_URBANIZ_SCOMPUTO" column="OPERE_URBANIZ_SCOMPUTO" typeHandler="flagSNHandler" />
+		<result property="FLAG_LIVELLO_PROGETTUALE" column="FLAG_LIVELLO_PROGETTUALE" />
+		<result property="FIN_REGIONALE" column="FIN_REGIONALE" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_AGGIUDICAZIONE" column="IMPORTO_AGGIUDICAZIONE" />
+		<result property="IMPORTO_DISPOSIZIONE" column="IMPORTO_DISPOSIZIONE" />
+		<result property="PERC_OFF_AUMENTO" column="PERC_OFF_AUMENTO" />
+		<result property="IMPORTO_APPALTO" column="IMPORTO_COMPL_APPALTO" />
+		<result property="REQUISITI_SS" column="REQUISITI_SETT_SPEC" />
+		<result property="IMPORTO_NETTO_SIC" column="IMPORTO_SUBTOTALE" />
+		<result property="ASTA_ELETTRONICA" column="ASTA_ELETTRONICA" typeHandler="flagSNHandler" />
+		<result property="PERC_RIBASSO_AGG" column="PERC_RIBASSO_AGG" />
+		<result property="ID_MODO_INDIZIONE" column="ID_MODO_INDIZIONE" />
+		<result property="NUM_IMPRESE_INVITATE" column="NUM_IMPRESE_INVITATE" />
+		<result property="NUM_OFFERTE_AMMESSE" column="NUM_OFFERTE_AMMESSE" />
+		<result property="PREINFORMAZIONE" column="PREINFORMAZIONE" typeHandler="flagSNHandler" />
+		<result property="NUM_IMPRESE_RICHIESTA_INVITO" column="NUM_IMPRESE_RICHIEDENTI" />
+		<result property="NUM_IMPRESE_OFFERENTI" column="NUM_IMPRESE_OFFERENTI" />
+		<result property="TERMINE_RIDOTTO" column="TERMINE_RIDOTTO" typeHandler="flagSNHandler" />
+		<result property="DATA_SCADENZA_RICHIESTA_INVITO" column="DATA_SCADENZA_RICHIESTA_INVITO" typeHandler="calendarHandler" />
+		<result property="DATA_SCADENZA_PRES_OFFERTA" column="DATA_SCADENZA_PRES_OFFERTA" typeHandler="calendarHandler" />
+		<result property="FLAG_AQ" column="FLAG_ACCORDO_QUADRO" typeHandler="flagSNHandler" />
+		<result property="DATA_INVITO" column="DATA_INVITO" typeHandler="calendarHandler" />
+		<result property="NUM_MANIF_INTERESSE" column="NUM_MANIF_INTERESSE" />
+		<result property="DATA_MANIF_INTERESSE" column="DATA_MANIF_INTERESSE" typeHandler="calendarHandler" />
+		<result property="NUM_OFFERTE_ESCLUSE" column="NUM_OFFERTE_ESCLUSE" />
+		<result property="OFFERTA_MASSIMO" column="OFFERTA_MASSIMO" />
+		<result property="OFFERTA_MINIMA" column="OFFERTA_MINIMA" />
+		<result property="VAL_SOGLIA_ANOMALIA" column="VAL_SOGLIA_ANOMALIA" />
+		<result property="NUM_OFFERTE_FUORI_SOGLIA" column="NUM_OFFERTE_FUORI_SOGLIA" />
+		<result property="NUM_IMP_ESCL_INSUF_GIUST" column="NUM_IMP_ESCL_INSUF_GIUST" />
+		<result property="IMP_NON_ASSOG" column="IMP_NON_ASSOG" />
+		<result property="MODALITA_RIAGGIUDICAZIONE" column="MODALITA_RIAGGIUDICAZIONE" />
+		<result property="DURATA_AQ" column="DURATA_ACCQUADRO" />
+		<result property="DATA_ATTO" column="DATA_ATTO" typeHandler="calendarHandler" />
+		<result property="NUM_ATTO" column="NUMERO_ATTO" />
+		<result property="TIPO_ATTO" column="TIPO_ATTO" />
+		<result property="PERC_IVA" column="IVA" />
+		<result property="IMPORTO_IVA" column="IMPORTO_IVA" />
+		<result property="FLAG_SICUREZZA" column="FLAG_SICUREZZA" typeHandler="flagImportiHandler" />
+		<result property="COD_STRUMENTO" column="COD_STRUMENTO" typeHandler="tipoStrumentoHandler" />
+		<result property="PROCEDURA_ACC" column="PROCEDURA_ACC" typeHandler="flagSNHandler" />
+		<result property="FLAG_RICH_SUBAPPALTO" column="FLAG_RICH_SUBAPPALTO" typeHandler="flagSNHandler" />
+		<result property="VERIFICA_CAMPIONE" column="VERIFICA_CAMPIONE" typeHandler="flagSNHandler" />
+		<result property="FLAG_IMPORTI" column="FLAG_IMPORTI" typeHandler="flagImportiHandler" />
+	</resultMap>
+
+	<!-- result property="IMPORTOINTERVENTO" column="IMPORTO_INTERVENTO" /-->
+	
+	<select id="selectDatiAggiudicazione" resultMap="resultDatiAggiudicazione" parameterClass="java.util.HashMap" >
+		select DATA_VERB_AGGIUDICAZIONE, IMPORTO_LAVORI, IMPORTO_SERVIZI, IMPORTO_FORNITURE, W9APPA.IMPORTO_ATTUAZIONE_SICUREZZA,
+					 IMPORTO_PROGETTAZIONE, OPERE_URBANIZ_SCOMPUTO, FLAG_LIVELLO_PROGETTUALE, FIN_REGIONALE, IMPORTO_AGGIUDICAZIONE, IMPORTO_DISPOSIZIONE,
+					 ROUND(PERC_OFF_AUMENTO,5) as PERC_OFF_AUMENTO, IMPORTO_COMPL_APPALTO, REQUISITI_SETT_SPEC, IMPORTO_SUBTOTALE, ASTA_ELETTRONICA,
+					 ROUND(PERC_RIBASSO_AGG,5) as PERC_RIBASSO_AGG, TO_CHAR(ID_MODO_INDIZIONE) as ID_MODO_INDIZIONE, coalesce(NUM_IMPRESE_INVITATE,0) as NUM_IMPRESE_INVITATE,
+					 NUM_OFFERTE_AMMESSE, PREINFORMAZIONE, NUM_IMPRESE_RICHIEDENTI, NUM_IMPRESE_OFFERENTI,
+					 TERMINE_RIDOTTO, DATA_SCADENZA_RICHIESTA_INVITO, DATA_SCADENZA_PRES_OFFERTA, FLAG_ACCORDO_QUADRO, 
+					 DATA_INVITO, NUM_MANIF_INTERESSE, DATA_MANIF_INTERESSE, NUM_OFFERTE_ESCLUSE, OFFERTA_MASSIMO, 
+					 OFFERTA_MINIMA, ROUND(VAL_SOGLIA_ANOMALIA,5) as VAL_SOGLIA_ANOMALIA, NUM_OFFERTE_FUORI_SOGLIA, NUM_IMP_ESCL_INSUF_GIUST,
+					 IMP_NON_ASSOG, TO_CHAR(MODALITA_RIAGGIUDICAZIONE) as MODALITA_RIAGGIUDICAZIONE, DURATA_ACCQUADRO, NUMERO_ATTO, DATA_ATTO, TO_CHAR(TIPO_ATTO) as TIPO_ATTO, IVA, IMPORTO_IVA,
+					 FLAG_IMPORTI, FLAG_SICUREZZA, VERIFICA_CAMPIONE, COD_STRUMENTO, PROCEDURA_ACC, FLAG_RICH_SUBAPPALTO
+		  from W9APPA, W9LOTT where W9APPA.CODGARA=#codiceGara:NUMERIC# AND W9APPA.CODLOTT=#codiceLotto:NUMERIC# AND W9LOTT.CODGARA = W9APPA.CODGARA AND W9LOTT.CODLOTT = W9APPA.CODLOTT
+	</select>
+	<!-- , null as IMPORTO_INTERVENTO oOoOoOoOo FLAG_RICH_SUBAPPALTO as FLAG_RICH_SUBAPPALTO_2, -->
+
+	<resultMap id="resultDatiAggiudicazioneExtra" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAggiudicazione" >
+		<result property="VERIFICA_CAMPIONE" columnIndex="3" typeHandler="flagSNHandler" />
+		<result property="FLAG_IMPORTI" columnIndex="1" typeHandler="flagImportiHandler" />
+		<result property="FLAG_SICUREZZA" columnIndex="2" typeHandler="flagImportiHandler" />
+		<result property="COD_STRUMENTO" columnIndex="4" typeHandler="tipoStrumentoHandler" />
+		<result property="PROCEDURA_ACC" columnIndex="5" typeHandler="flagSNHandler" />
+		<result property="FLAG_RICHSUB_APPALTO" columnIndex="6" typeHandler="flagSNHandler" />
+	</resultMap>
+
+	<!--resultMap id="resultDatiAggiudicazioneExtra" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAggiudicazione" >
+		<result property="FLAGSICUREZZA" column="FLAG_SICUREZZA" typeHandler="flagImportiHandler" />
+		<result property="CODSTRUMENTO" column="COD_STRUMENTO" typeHandler="tipoStrumentoHandler" />
+		<result property="PROCEDURAACC" column="PROCEDURA_ACC" typeHandler="flagSNHandler" />
+		<result property="FLAGRICHSUBAPPALTO" column="FLAG_RICH_SUBAPPALTO" typeHandler="flagSNHandler" />
+		<result property="VERIFICACAMPIONE" column="VERIFICA_CAMPIONE" typeHandler="flagSNHandler" />
+		<result property="FLAGIMPORTI" column="FLAG_IMPORTI" typeHandler="flagImportiHandler" />
+	</resultMap-->
+	
+	<select id="selectDatiAggiudicazioneExtra" resultMap="resultDatiAggiudicazioneExtra" parameterClass="java.util.HashMap" >
+		select FLAG_IMPORTI, FLAG_SICUREZZA, VERIFICA_CAMPIONE, COD_STRUMENTO, PROCEDURA_ACC, FLAG_RICH_SUBAPPALTO 
+		  from W9APPA where W9APPA.CODGARA=#codiceGara:NUMERIC# AND W9APPA.CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<resultMap id="resultFinanziamenti" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.Finanziamenti" >
+		<result property="IMPORTO_FINANZIAMENTO" column="IMPORTO_FINANZIAMENTO" />
+		<result property="ID_FINANZIAMENTO" column="ID_FINANZIAMENTO" typeHandler="flagTipoFinanziamentoHandler" />
+	</resultMap>
+
+	<select id="selectListaFinanziamenti" resultMap="resultFinanziamenti" parameterClass="java.util.HashMap" >
+		select ID_FINANZIAMENTO, IMPORTO_FINANZIAMENTO
+			from W9FINA where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC#
+		order by ID_FINANZIAMENTO asc
+	</select>
+
+	<resultMap id="resultCategorie" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.Categorie">
+		<result property="ID_CATEGORIA" column="ID_CATEGORIA" typeHandler="categoriaHandler" />
+		<result property="CLASSE_IMPORTO" column="CLASCAT" typeHandler="classeImportoHandler" />
+		<result property="PREVALENTE" column="PREVALENTE" typeHandler="flagSNHandler" />
+		<result property="SCORPORABILE" column="SCORPORABILE" typeHandler="flagSNHandler" />
+		<result property="SUBAPPALTABILE" column="SUBAPPALTABILE" typeHandler="flagSNHandler" />
+	</resultMap>
+
+	<select id="selectDatiCategorie" resultMap="resultCategorie" parameterClass="java.util.HashMap" >
+		select C2.CODAVCP as ID_CATEGORIA, CLASCAT, '1' as PREVALENTE, '2' as SCORPORABILE, '2' as SUBAPPALTABILE
+			from W9LOTT LEFT JOIN W9CODICI_AVCP C2 ON (C2.TABCOD = 'W3z03' and C2.CODSITAT = W9LOTT.ID_CATEGORIA_PREVALENTE)
+		 where W9LOTT.CODGARA=#codiceGara:NUMERIC# and W9LOTT.CODLOTT=#codiceLotto:NUMERIC#
+		union
+		select C4.CODAVCP as ID_CATEGORIA, W9LOTTCATE.CLASCAT, '2' as PREVALENTE, W9LOTTCATE.SCORPORABILE as SCORPORABILE, W9LOTTCATE.SUBAPPALTABILE
+			from W9LOTTCATE LEFT JOIN W9CODICI_AVCP C4 ON (C4.TABCOD = 'W3z03' and C4.CODSITAT = W9LOTTCATE.CATEGORIA)
+		 where W9LOTTCATE.CODGARA=#codiceGara:NUMERIC# and W9LOTTCATE.CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+	
+	<resultMap id="resultCampiListaAggiudicatari" class="it.eldasoft.w9.dao.vo.ImpresaAggiudicataria" >
+		<result property="codiceGara" column="CODGARA" />
+		<result property="codiceLotto" column="CODLOTT" />
+		<result property="numAppalto" column="NUM_APPA" />
+		<result property="numeroAggiudicataria" column="NUM_AGGI" />
+		<result property="codiceImpresa" column="CODIMP" />
+		<result property="codiceImpresaAusiliaria" column="CODIMP_AUSILIARIA" />
+	</resultMap>
+	
+	<select id="selectCampiListaAggiudicatari" resultMap="resultCampiListaAggiudicatari" parameterClass="java.util.HashMap"  >
+		select CODGARA, CODLOTT, NUM_APPA, NUM_AGGI, CODIMP, CODIMP_AUSILIARIA
+  		from W9AGGI
+ 		 where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# 
+		order by NUM_APPA asc, NUM_AGGI asc
+	</select>
+
+	<resultMap id="resultAggiudicatario" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.Aggiudicatario">
+		<result property="TIPOLOGIA_SOGGETTO" column="ID_TIPOAGG" />
+		<result property="RUOLO" column="RUOLO" />
+		<result property="FLAG_AVVALIMENTO" column="FLAG_AVVALIMENTO" />
+		<result property="ID_GRUPPO" column="ID_GRUPPO"  />
+		<!--result property="MOTIVOAVVALIMENTO" column="MOTIVO_AVVALIMENTO" /-->
+	</resultMap>
+
+	<select id="selectAggiudicatario" resultMap="resultAggiudicatario" parameterClass="java.util.HashMap" >
+		select TO_CHAR(ID_TIPOAGG) as ID_TIPOAGG, TO_CHAR(RUOLO) as RUOLO, FLAG_AVVALIMENTO, ID_GRUPPO
+  		from W9AGGI
+ 		 where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# and NUM_APPA=#numAppalto:NUMERIC# AND NUM_AGGI=#numeroAggiudicataria:NUMERIC#
+	</select>
+	<!-- , null as MOTIVO_AVVALIMENTO -->
+
+	
+	<resultMap id="resultDatiInizio" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiInizio" >
+		<result property="DATA_STIPULA" column="DATA_STIPULA" typeHandler="calendarHandler" />
+		<result property="FLAG_RISERVA" column="FLAG_RISERVA" typeHandler="flagSNHandler" />
+		<result property="DATA_VERB_INIZIO" column="DATA_VERB_INIZIO" typeHandler="calendarHandler" />
+	  <result property="DATA_TERMINE" column="DATA_TERMINE" typeHandler="calendarHandler" />
+		<result property="DATA_ESECUTIVITA" column="DATA_ESECUTIVITA" typeHandler="calendarHandler" />
+		<result property="IMPORTO_CAUZIONE" column="IMPORTO_CAUZIONE" />
+		<result property="DATA_INI_PROG_ESEC" column="DATA_INI_PROG_ESEC" typeHandler="calendarHandler" />
+		<result property="DATA_APP_PROG_ESEC" column="DATA_APP_PROG_ESEC" typeHandler="calendarHandler" />
+		<result property="FLAG_FRAZIONATA" column="FLAG_FRAZIONATA" typeHandler="flagSNHandler" />
+		<result property="DATA_VERB_PRIMA_CONSEGNA" column="DATA_VERBALE_CONS" typeHandler="calendarHandler" />
+		<result property="DATA_VERBALE_DEF" column="DATA_VERBALE_DEF" typeHandler="calendarHandler" />
+	</resultMap>
+	
+	<select id="selectDatiInizio" resultMap="resultDatiInizio" parameterClass="java.util.HashMap" >
+		select DATA_STIPULA, FLAG_RISERVA, DATA_VERB_INIZIO, DATA_TERMINE, DATA_ESECUTIVITA, IMPORTO_CAUZIONE, DATA_INI_PROG_ESEC, DATA_APP_PROG_ESEC,
+					 FLAG_FRAZIONATA, DATA_VERBALE_CONS, DATA_VERBALE_DEF
+		  from W9INIZ where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# and NUM_INIZ=1
+	</select>
+
+	<resultMap id="resultDatiPubblicazione" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.Pubblicazione" >
+		<result property="DATA_GUCE" column="DATA_GUCE" typeHandler="calendarHandler" />
+		<result property="DATA_GURI" column="DATA_GURI" typeHandler="calendarHandler" />
+		<!--result property="DATABUR" column="DATA_BUR" typeHandler="calendarHandler" /-->
+		<result property="DATA_ALBO" column="DATA_ALBO" typeHandler="calendarHandler" />
+		<result property="QUOTIDIANI_NAZ" column="QUOTIDIANI_NAZ" />
+		<result property="QUOTIDIANI_REG" column="QUOTIDIANI_REG" />
+		<!--result property="QUOTIDIANILOC" column="QUOTIDIANI_LOC" /-->
+		<result property="PROFILO_COMMITTENTE" column="PROFILO_COMMITTENTE" typeHandler="flagSNHandler" />
+		<result property="SITO_MINISTERO_INF_TRASP" column="SITO_MINISTERO_INF_TRASP" typeHandler="flagSNHandler" />
+		<result property="SITO_OSSERVATORIO_CP" column="SITO_OSSERVATORIO_CP" typeHandler="flagSNHandler" />
+	</resultMap>
+	
+	<select id="selectPubblicazione" resultMap="resultDatiPubblicazione" parameterClass="java.util.HashMap" >
+  	select DATA_GUCE, DATA_GURI, DATA_ALBO, QUOTIDIANI_NAZ, QUOTIDIANI_REG, PROFILO_COMMITTENTE, SITO_MINISTERO_INF_TRASP, SITO_OSSERVATORIO_CP
+		  from W9PUES where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# and NUM_INIZ=1
+	order by NUM_PUES asc
+	</select>
+	<!-- , null as DATA_BUR, null as QUOTIDIANI_LOC, -->
+
+	<resultMap id="resultDatiAvanzamento" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAvanzamento" >
+		<result property="DATA_CERTIFICATO" column="DATA_CERTIFICATO" typeHandler="calendarHandler" />
+		<result property="IMPORTO_CERTIFICATO" column="IMPORTO_CERTIFICATO" />
+		<result property="FLAG_RITARDO" column="FLAG_RITARDO" typeHandler="flagRitardoHandler" />
+		<result property="NUM_GIORNI_SCOST" column="NUM_GIORNI_SCOST"  />
+		<result property="NUM_GIORNI_PROROGA" column="NUM_GIORNI_PROROGA"  />
+		<result property="FLAG_PAGAMENTO" column="FLAG_PAGAMENTO" />
+		<result property="SUBAPPALTI" column="SUBAPPALTI" typeHandler="flagSNHandler" />
+		<result property="DATA_ANTICIPAZIONE" column="DATA_ANTICIPAZIONE" typeHandler="calendarHandler" />
+		<result property="IMPORTO_ANTICIPAZIONE" column="IMPORTO_ANTICIPAZIONE" />
+		<result property="DATA_RAGGIUNGIMENTO" column="DATA_RAGGIUNGIMENTO" typeHandler="calendarHandler" />
+		<result property="IMPORTO_SAL" column="IMPORTO_SAL" />
+		<result property="DENOMINAZIONE" column="DENOM_AVANZAMENTO" />
+	</resultMap>
+
+	<select id="selectDatiAvanzamento" resultMap="resultDatiAvanzamento" parameterClass="java.util.HashMap" >
+		select DATA_CERTIFICATO, IMPORTO_CERTIFICATO, FLAG_RITARDO, NUM_GIORNI_SCOST,  
+					 NUM_GIORNI_PROROGA, TO_CHAR(FLAG_PAGAMENTO) as FLAG_PAGAMENTO, DATA_ANTICIPAZIONE, IMPORTO_ANTICIPAZIONE, 
+	    		 DATA_RAGGIUNGIMENTO, IMPORTO_SAL, DENOM_AVANZAMENTO, SUBAPPALTI
+			from W9AVAN where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+	order by NUM_AVAN asc
+	</select>
+
+	<select id="selectListaCampiChiaveVarianti" resultClass="java.lang.Long"  parameterClass="java.util.HashMap" >
+		select NUM_VARI from W9VARI where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+	order by NUM_VARI asc
+	</select>
+
+	<resultMap id="resultDatiVariante" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiVariante" >	
+		<result property="ALTRE_MOTIVAZIONI" column="ALTRE_MOTIVAZIONI" />
+		<result property="IMP_RIDET_LAVORI" column="IMP_RIDET_LAVORI" />
+		<result property="FLAG_IMPORTI" column="FLAG_IMPORTI" typeHandler="flagImportiHandler" />
+		<result property="IMP_RIDET_SERVIZI" column="IMP_RIDET_SERVIZI" />
+		<result property="IMP_RIDET_FORNIT" column="IMP_RIDET_FORNIT" />
+		<result property="FLAG_VARIANTE" column="FLAG_VARIANTE" typeHandler="flagVarianteHandler" />
+		<result property="IMP_SICUREZZA" column="IMP_SICUREZZA" />
+		<result property="IMP_PROGETTAZIONE" column="IMP_PROGETTAZIONE" />
+		<result property="DATA_VERB_APPR" column="DATA_VERB_APPR" typeHandler="calendarHandler" />
+		<result property="IMP_DISPOSIZIONE" column="IMP_DISPOSIZIONE" />
+		<result property="DATA_ATTO_AGGIUNTIVO" column="DATA_ATTO_AGGIUNTIVO" typeHandler="calendarHandler" />
+		<result property="NUM_GIORNI_PROROGA" column="NUM_GIORNI_PROROGA"  />
+		<result property="IMPORTO_SUBTOTALE" column="IMP_SUBTOTALE" />
+		<result property="QUINTO_OBBLIGO" column="QUINTO_OBBLIGO" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_RIDETERMINATO" column="IMP_COMPL_APPALTO" />
+		<result property="IMPORTO_COMPLESSIVO" column="IMP_COMPL_INTERVENTO" />
+		<result property="FLAG_SICUREZZA" column="FLAG_SICUREZZA" typeHandler="flagImportiHandler" />
+	</resultMap>
+
+	<select id="selectDatiVariante" resultMap="resultDatiVariante" parameterClass="java.util.HashMap" >
+ 		select FLAG_VARIANTE, QUINTO_OBBLIGO, FLAG_IMPORTI, FLAG_SICUREZZA,
+ 					 DATA_VERB_APPR, ALTRE_MOTIVAZIONI, IMP_RIDET_LAVORI, IMP_RIDET_SERVIZI, IMP_RIDET_FORNIT,
+  				 IMP_SICUREZZA, IMP_PROGETTAZIONE, IMP_DISPOSIZIONE, DATA_ATTO_AGGIUNTIVO, NUM_GIORNI_PROROGA,
+  				 IMP_SUBTOTALE, IMP_COMPL_APPALTO, IMP_COMPL_INTERVENTO
+			from W9VARI where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# and NUM_VARI=#numeroVariante:NUMERIC#
+	</select>
+	
+	<select id="selectListaMotiviVariante" resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+		select TO_CHAR(ID_MOTIVO_VAR) from W9MOTI 
+		 where CODGARA=#codiceGara:NUMERIC# AND CODLOTT=#codiceLotto:NUMERIC# AND NUM_VARI=#numeroVariante:NUMERIC#   
+	</select>
+
+	<resultMap id="resultDatiSospensione" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiSospensione" >
+		<result property="NUM_PROGRESSIVO" column="NUM_SOSP"  />
+		<result property="DATA_VERB_SOSP" column="DATA_VERB_SOSP" typeHandler="calendarHandler" />
+		<result property="DATA_VERB_RIPR" column="DATA_VERB_RIPR" typeHandler="calendarHandler" />
+		<result property="ID_MOTIVO_SOSP" column="ID_MOTIVO_SOSP" />
+		<result property="FLAG_SUPERO_TEMPO" column="FLAG_SUPERO_TEMPO" typeHandler="flagSNHandler" />
+		<result property="FLAG_RISERVE" column="FLAG_RISERVE" typeHandler="flagSNHandler" />
+		<result property="FLAG_VERBALE" column="FLAG_VERBALE" typeHandler="flagSNHandler" />
+	</resultMap>
+
+	<select id="selectListaDatiSospensione" resultMap="resultDatiSospensione" parameterClass="java.util.HashMap" >
+		select NUM_SOSP, DATA_VERB_SOSP, DATA_VERB_RIPR, ID_MOTIVO_SOSP,
+           FLAG_SUPERO_TEMPO, FLAG_RISERVE, FLAG_VERBALE
+			from W9SOSP where CODGARA = #codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+	order by NUM_SOSP asc
+	</select>
+	
+	<resultMap id="resultDatiConclusione" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiConclusione" >
+		<result property="DATA_RISOLUZIONE" column="DATA_RISOLUZIONE" typeHandler="calendarHandler" />
+		<result property="ID_MOTIVO_INTERR" column="ID_MOTIVO_INTERR" />
+		<result property="ID_MOTIVO_RISOL" column="ID_MOTIVO_RISOL" />
+		<result property="FLAG_INTERR_ANTICIPATA" column="INTANTIC" typeHandler="flagSNHandler" />
+		<result property="ONERI_RISOLUZIONE" column="ONERI_RISOLUZIONE" />
+		<result property="DATA_VERB_CONSEGNA_AVVIO" column="DATA_VERBALE_CONSEGNA" typeHandler="calendarHandler" />
+		<result property="DATA_TERMINE_CONTRATTUALE" column="TERMINE_CONTRATTO_ULT" typeHandler="calendarHandler" />
+		<result property="DATA_ULTIMAZIONE" column="DATA_ULTIMAZIONE" typeHandler="calendarHandler" />
+		<result property="FLAG_ONERI" column="FLAG_ONERI" />
+		<result property="NUM_INFORTUNI" column="NUM_INFORTUNI"  />
+		<result property="NUM_INF_PERM" column="NUM_INF_PERM"  />
+		<result property="FLAG_POLIZZA" column="FLAG_POLIZZA" typeHandler="flagSNHandler" />
+		<result property="NUM_GIORNI_PROROGA" column="NUM_GIORNI_PROROGA"  />
+		<result property="NUM_INF_MORT" column="NUM_INF_MORT"  />
+		<result property="ORE_LAVORATE" column="ORE_LAVORATE" />
+	</resultMap>
+
+	<select id="selectDatiConclusione" resultMap="resultDatiConclusione" parameterClass="java.util.HashMap" >
+		select INTANTIC, TO_CHAR(ID_MOTIVO_INTERR) as ID_MOTIVO_INTERR, TO_CHAR(ID_MOTIVO_RISOL) as ID_MOTIVO_RISOL, DATA_RISOLUZIONE,
+					 coalesce(FLAG_POLIZZA, '2') as FLAG_POLIZZA, TO_CHAR(FLAG_ONERI) as FLAG_ONERI, ONERI_RISOLUZIONE, DATA_VERBALE_CONSEGNA,
+					 TERMINE_CONTRATTO_ULT, NUM_INFORTUNI, DATA_ULTIMAZIONE, NUM_INF_PERM, NUM_INF_MORT, ORE_LAVORATE, NUM_GIORNI_PROROGA
+			from W9CONC where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+
+	<resultMap id="resultCampiListaSubappalti" class="it.eldasoft.w9.dao.vo.ImpresaAggiudicataria">
+		<result property="codiceGara" column="CODGARA" />
+		<result property="codiceLotto" column="CODLOTT" />
+		<result property="numAppalto" column="NUM_SUBA" />
+		<result property="codiceImpresa" column="CODIMP" />
+		<result property="codiceImpresaAusiliaria" column="CODIMP_AGGIUDICATRICE" />
+	</resultMap>
+
+	<select id="selectCampiListaSubappalti" resultMap="resultCampiListaSubappalti" parameterClass="java.util.HashMap"  >
+		select CODGARA, CODLOTT, NUM_SUBA, CODIMP, CODIMP_AGGIUDICATRICE
+  		from W9SUBA where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+  order by NUM_SUBA asc
+	</select>	
+
+	<resultMap id="resultDatiSubappalto" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiSubappalto" >
+		<result property="DATA_AUTORIZZAZIONE" column="DATA_AUTORIZZAZIONE" typeHandler="calendarHandler" />
+		<result property="OGGETTO_SUBAPPALTO" column="OGGETTO_SUBAPPALTO" />
+		<result property="IMPORTO_PRESUNTO"  column="IMPORTO_PRESUNTO" />
+		<result property="IMPORTO_EFFETTIVO" column="IMPORTO_EFFETTIVO" />
+		<result property="ID_CATEGORIA"	column="ID_CATEGORIA"	columnIndex="5" typeHandler="categoriaHandler" />
+		<result property="ID_CPV" column="ID_CPV" />
+	</resultMap>
+
+	<select id="selectDatiSubappalto" resultMap="resultDatiSubappalto" parameterClass="java.util.HashMap" >
+		select W9SUBA.DATA_AUTORIZZAZIONE, W9SUBA.OGGETTO_SUBAPPALTO, W9SUBA.IMPORTO_PRESUNTO,
+					 W9SUBA.IMPORTO_EFFETTIVO, C.CODAVCP as ID_CATEGORIA, TO_CHAR(W9SUBA.ID_CPV) as ID_CPV
+			from W9SUBA, W9CODICI_AVCP C
+			where W9SUBA.CODGARA=#codiceGara:NUMERIC# and W9SUBA.CODLOTT=#codiceLotto:NUMERIC# and W9SUBA.NUM_SUBA=#numeroSubappalto:NUMERIC# 
+				AND W9SUBA.ID_CATEGORIA=C.CODSITAT and C.TABCOD='W3z03'
+	</select>
+
+	<resultMap id="resultDatiRecesso" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiRecesso" >
+		<result property="DATA_TERMINE" column="DATA_TERMINE" typeHandler="calendarHandler" />
+		<result property="DATA_CONSEGNA" column="DATA_CONSEGNA" typeHandler="calendarHandler" />
+		<result property="FLAG_TIPO_COMUNICAZIONE" column="TIPO_COMUN" typeHandler="flagTCHandler" />
+		<result property="DURATA_SOSP" column="DURATA_SOSP" />
+		<result property="DATA_IST_RECESSO" column="DATA_IST_RECESSO" typeHandler="calendarHandler" />
+		<result property="FLAG_ACCOLTA" column="FLAG_ACCOLTA" typeHandler="flagSNHandler" />
+		<result property="MOTIVO_SOSP" column="MOTIVO_SOSP" />
+		<result property="FLAG_TARDIVA" column="FLAG_TARDIVA" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_SPESE" column="IMPORTO_SPESE" />
+		<result property="FLAG_RIPRESA" column="FLAG_RIPRESA" typeHandler="flagSNHandler" />
+		<result property="IMPORTO_ONERI" column="IMPORTO_ONERI" />
+		<result property="GG_RITARDO" column="GG_RITARDO"  />
+		<result property="FLAG_RISERVA" column="FLAG_RISERVA" typeHandler="flagSNHandler" />
+	</resultMap>
+
+	<select id="selectListaDatiRecessi" resultMap="resultDatiRecesso" parameterClass="java.util.HashMap" >
+		select DATA_TERMINE, DATA_CONSEGNA, TIPO_COMUN, DURATA_SOSP, TO_CHAR(MOTIVO_SOSP) as MOTIVO_SOSP, DATA_IST_RECESSO,
+    			 FLAG_ACCOLTA, FLAG_TARDIVA, FLAG_RIPRESA, FLAG_RISERVA, IMPORTO_SPESE, IMPORTO_ONERI
+			from W9RITA where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC# and NUM_RTA=#numeroRitardo:NUMERIC#
+	</select>
+	<!-- , null as GG_RITARDO -->
+	
+	<resultMap id="resultDatiAccordo" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiAccordo" >
+		<result property="DATA_INIZIO_ACC" column="DATA_INIZIO_ACC" typeHandler="calendarHandler" />
+		<result property="DATA_FINE_ACC" column="DATA_FINE_ACC" typeHandler="calendarHandler" />
+		<result property="DATA_ACCORDO" column="DATA_ACCORDO" typeHandler="calendarHandler" />
+		<result property="ONERI_DERIVANTI" column="ONERI_DERIVANTI" />
+		<result property="NUM_RISERVE" column="NUM_RISERVE" />
+	</resultMap>
+
+	<select id="selectListaDatiAccordiBonari" resultMap="resultDatiAccordo" parameterClass="java.util.HashMap" >
+		select DATA_ACCORDO, ONERI_DERIVANTI, NUM_RISERVE, DATA_INIZIO_ACC, DATA_FINE_ACC
+ 			from W9ACCO where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+ 	order by NUM_ACCO asc
+	</select>
+	<!-- null as DATA_INIZIO_ACC, null as DATA_FINE_ACC,  -->
+	
+	<resultMap id="resultDatiCollaudo" class="it.maggioli.w9.pubblica.webservices.AppaltiLiguriaWebService.types.DatiCollaudo" >
+		<result property="DATA_APPROVAZIONE" column="DATA_APPROVAZIONE" typeHandler="calendarHandler" />
+		<result property="DATA_REGOLARE_ESEC" column="DATA_REGOLARE_ESEC" typeHandler="calendarHandler" />
+		<result property="DATA_COLLAUDO_STAT" column="DATA_COLLAUDO_STAT" typeHandler="calendarHandler" />
+		<result property="MODO_COLLAUDO" column="MODO_COLLAUDO" />
+		<result property="DATA_NOMINA_COLL" column="DATA_NOMINA_COLL" typeHandler="calendarHandler" />
+		<result property="DATA_INIZIO_OPER" column="DATA_INIZIO_OPER" typeHandler="calendarHandler" />
+		<result property="DATA_CERT_COLLAUDO" column="DATA_CERT_COLLAUDO" typeHandler="calendarHandler" />
+		<result property="DATA_DELIBERA" column="DATA_DELIBERA" typeHandler="calendarHandler" />
+		<result property="IMP_FINALE_LAVORI" column="IMP_FINALE_LAVORI" />
+		<result property="IMP_FINALE_SERVIZI" column="IMP_FINALE_SERVIZI" />
+		<result property="IMP_FINALE_FORNIT" column="IMP_FINALE_FORNIT" />
+		<result property="FLAG_SINGOLO_COMMISSIONE" column="FLAG_SINGOLO_COMMISSIONE" typeHandler="flagSingoloCommissioneHandler" />
+		<result property="IMP_FINALE_SECUR" column="IMP_FINALE_SECUR" />
+		<result property="IMP_PROGETTAZIONE" column="IMP_PROGETTAZIONE" />
+		<result property="FLAG_IMPORTI" column="FLAG_IMPORTI" typeHandler="flagImportiHandler" />
+		<result property="IMP_DISPOSIZIONE" column="IMP_DISPOSIZIONE" />
+		<result property="AMM_NUM_DEFINITE" column="AMM_NUM_DEFINITE"  />
+		<result property="FLAG_SICUREZZA" column="FLAG_SICUREZZA" typeHandler="flagImportiHandler" />
+		<result property="AMM_NUM_DADEF" column="AMM_NUM_DADEF"  />
+		<result property="AMM_IMPORTO_RICH" column="AMM_IMPORTO_RICH" />
+		<result property="FLAG_SUBAPPALTATORI" column="FLAG_SUBAPPALTATORI" typeHandler="flagSNHandler" />
+		<result property="AMM_IMPORTO_DEF" column="AMM_IMPORTO_DEF" />
+		<result property="DATA_INIZIO_AMM_RISERVE" column="DATA_INIZIO_AMM_RISERVE" typeHandler="calendarHandler" />
+		<result property="DATA_FINE_AMM_RISERVE" column="DATA_FINE_AMM_RISERVE" typeHandler="calendarHandler" />
+		<result property="ARB_NUM_DEFINITE" column="ARB_NUM_DEFINITE"  />
+		<result property="ARB_NUM_DADEF" column="ARB_NUM_DADEF"  />
+		<result property="ARB_IMPORTO_RICH" column="ARB_IMPORTO_RICH" />
+		<result property="ARB_IMPORTO_DEF" column="ARB_IMPORTO_DEF" />
+		<result property="DATA_INIZIO_ARB_RISERVE" column="DATA_INIZIO_ARB_RISERVE" typeHandler="calendarHandler" />
+		<result property="DATA_FINE_ARB_RISERVE" column="DATA_FINE_ARB_RISERVE" typeHandler="calendarHandler" />
+		<result property="GIU_NUM_DEFINITE" column="GIU_NUM_DEFINITE"  />
+		<result property="GIU_NUM_DADEF" column="GIU_NUM_DADEF"  />
+		<result property="GIU_IMPORTO_RICH" column="GIU_IMPORTO_RICH" />
+		<result property="GIU_IMPORTO_DEF" column="GIU_IMPORTO_DEF" />
+		<result property="DATA_INIZIO_GIU_RISERVE" column="DATA_INIZIO_GIU_RISERVE" typeHandler="calendarHandler" />
+		<result property="DATA_FINE_GIU_RISERVE" column="DATA_FINE_GIU_RISERVE" typeHandler="calendarHandler" />
+		<result property="TRA_NUM_DEFINITE" column="TRA_NUM_DEFINITE"  />
+		<result property="TRA_NUM_DADEF" column="TRA_NUM_DADEF"  />
+		<result property="TRA_IMPORTO_RICH" column="TRA_IMPORTO_RICH" />
+		<result property="TRA_IMPORTO_DEF" column="TRA_IMPORTO_DEF" />
+		<result property="DATA_INIZIO_TRA_RISERVE" column="DATA_INIZIO_TRA_RISERVE" typeHandler="calendarHandler" />
+		<result property="DATA_FINE_TRA_RISERVE" column="DATA_FINE_TRA_RISERVE" typeHandler="calendarHandler" />
+		<result property="ESITO_COLLAUDO" column="ESITO_COLLAUDO" typeHandler="flagEsitoCollaudoHandler" />
+		<result property="IMPORTO_SUBTOTALE" column="IMP_SUBTOTALE" />
+		<result property="IMPORTO_FINALE" column="IMP_COMPL_APPALTO" />
+		<!-- result property="ONERI_TRA_RISERVE" column="ONERI_TRA_RISERVE" /-->
+		<result property="IMPORTO_CONSUNTIVO" column="IMP_COMPL_INTERVENTO" />
+		<result property="FLAG_LAVORI_ESTESI" column="LAVORI_ESTESI" typeHandler="flagSNHandler" />
+	</resultMap>
+
+	<select id="selectDatiCollaudo" resultMap="resultDatiCollaudo" parameterClass="java.util.HashMap" >
+		select DATA_APPROVAZIONE, FLAG_IMPORTI, FLAG_SICUREZZA, FLAG_SUBAPPALTATORI, DATA_REGOLARE_ESEC, FLAG_SINGOLO_COMMISSIONE, 
+					 DATA_COLLAUDO_STAT, TO_CHAR(MODO_COLLAUDO) as MODO_COLLAUDO, DATA_NOMINA_COLL, DATA_INIZIO_OPER, DATA_CERT_COLLAUDO, DATA_DELIBERA, ESITO_COLLAUDO,
+					 IMP_FINALE_LAVORI, IMP_FINALE_SERVIZI, IMP_FINALE_FORNIT, IMP_FINALE_SECUR, IMP_PROGETTAZIONE, IMP_DISPOSIZIONE, 
+					 AMM_NUM_DEFINITE, AMM_NUM_DADEF, AMM_IMPORTO_RICH, AMM_IMPORTO_DEF, ARB_NUM_DEFINITE, ARB_NUM_DADEF, ARB_IMPORTO_RICH,
+					 ARB_IMPORTO_DEF, GIU_NUM_DEFINITE, GIU_NUM_DADEF, GIU_IMPORTO_RICH, GIU_IMPORTO_DEF, TRA_NUM_DEFINITE, TRA_NUM_DADEF,
+					 TRA_IMPORTO_RICH, TRA_IMPORTO_DEF, IMP_SUBTOTALE, IMP_COMPL_APPALTO, IMP_COMPL_INTERVENTO, LAVORI_ESTESI,
+					 DATA_INIZIO_AMM_RISERVE, DATA_FINE_AMM_RISERVE, DATA_INIZIO_ARB_RISERVE, DATA_FINE_ARB_RISERVE, 
+			 		 DATA_INIZIO_GIU_RISERVE, DATA_FINE_GIU_RISERVE, DATA_INIZIO_TRA_RISERVE, DATA_FINE_TRA_RISERVE 
+		  from W9COLL where CODGARA=#codiceGara:NUMERIC# and CODLOTT=#codiceLotto:NUMERIC#
+	</select>
+
+</sqlMap>

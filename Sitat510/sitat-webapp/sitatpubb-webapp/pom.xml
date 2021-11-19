@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.toscana.regione.sitat</groupId>
+		<artifactId>sitat-webapp</artifactId>
+		<version>2.6.3</version>
+	</parent>
+	<!-- CONFIGURA QUA IL NOME DEL PROGETTO -->
+	<artifactId>sitatpubb-webapp</artifactId>
+	<!-- CONFIGURA QUA IL TIPO DI PACKAGING-->
+	<packaging>war</packaging>
+
+	<!-- CONFIGURA QUA IL NOME DEL PROGETTO -->
+	<name>Web application Sitat per la pubblicazione alle stazioni appaltanti dei dati raccolti presso l'Osservatorio Regione Toscana</name>
+	<url>http://oscat.rete.toscana.it/projects/sitat</url>
+	
+	<build>
+		<finalName>SitatPubb</finalName>
+		
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
