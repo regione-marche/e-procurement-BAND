@@ -10,3 +10,5 @@ Le principali funzionalità sono:
 - Compilazione di programmi triennali e annuali di LL.PP.
 - Compilazione di programmi biennali di beni e servizi
 - Pubblicazione dati e trasmissione al servizio SCP
+
+ATTENZIONE: sistema abbandonato e sostituito dal 1 gennaio 2024 dai servizi PCP di ANAC.
